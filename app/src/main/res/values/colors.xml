@@ -30,4 +30,8 @@
     <color name="md_theme_inverseSurface">#313033</color>
     <color name="md_theme_inverseOnSurface">#F4EFF4</color>
     <color name="md_theme_inversePrimary">#D0BCFF</color>
-    <color name="md_theme_surfaceTint">#6750A4</color> </resources>
+    <color name="md_theme_surfaceTint">#6750A4</color>
+    <color name="purple_200">#BB86FC</color>
+    <color name="purple_700">#3700B3</color>
+    <color name="teal_200">#03DAC5</color>
+</resources>
