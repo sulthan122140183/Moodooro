@@ -11,7 +11,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
+// import kotlinx.coroutines.flow.combine // Not used
+import java.util.Calendar // Added import
 
 data class WeeklyStats(
     val totalStudyDurationMinutes: Int = 0,
@@ -37,17 +38,20 @@ class WeeklyInsightViewModel(private val studySessionDao: StudySessionDao) : Vie
         _weeklyStats.value = WeeklyStats(isLoading = true, error = null)
         _studySessions.value = emptyList() // Clear previous sessions
 
-        // Menggunakan combine untuk memproses sesi setelah diambil
-        studySessionDao.getSessionsLastNdays(7) // Ambil data 7 hari terakhir
-            .onEach { sessions ->
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DAY_OF_YEAR, -7) // Go back 7 days
+        val sevenDaysAgoTimestamp = calendar.timeInMillis
+
+        studySessionDao.getSessionsAfter(sevenDaysAgoTimestamp) // Use existing DAO method
+            .onEach { sessions: List<StudySessionEntity> -> // Explicitly typed sessions
                 _studySessions.value = sessions // Update study sessions
 
                 if (sessions.isEmpty()) {
                     _weeklyStats.value = WeeklyStats(isLoading = false)
                 } else {
-                    val totalDuration = sessions.sumOf { it.focusDurationMinutes }
-                    val focusedCount = sessions.count { it.sessionOutcome == "Focused" }
-                    val distractedCount = sessions.count { it.sessionOutcome == "Distracted" }
+                    val totalDuration = sessions.sumOf { session: StudySessionEntity -> session.focusDurationMinutes }
+                    val focusedCount = sessions.count { session: StudySessionEntity -> session.sessionOutcome == "Focused" }
+                    val distractedCount = sessions.count { session: StudySessionEntity -> session.sessionOutcome == "Distracted" }
                     _weeklyStats.value = WeeklyStats(
                         totalStudyDurationMinutes = totalDuration,
                         focusedSessionsCount = focusedCount,
@@ -56,7 +60,7 @@ class WeeklyInsightViewModel(private val studySessionDao: StudySessionDao) : Vie
                     )
                 }
             }
-            .catch { e ->
+            .catch { e: Throwable -> // Explicitly typed exception
                 _weeklyStats.value = WeeklyStats(isLoading = false, error = "Gagal memuat data statistik: ${e.localizedMessage}")
                 // Anda mungkin juga ingin menandai error pada _studySessions jika perlu
                  _studySessions.value = emptyList() // Kosongkan sesi jika ada error

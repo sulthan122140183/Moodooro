@@ -1,8 +1,8 @@
 package com.example.moodooro.data.repository
 
 import androidx.lifecycle.LiveData
-import com.example.moodooro.data.local.MoodEntryDao // Path diperbarui
-import com.example.moodooro.data.local.MoodEntryEntity // Path diperbarui
+import com.example.moodooro.data.local.dao.MoodEntryDao // Path diperbarui
+import com.example.moodooro.data.local.entity.MoodEntryEntity // Path diperbarui
 import kotlinx.coroutines.flow.Flow
 
 /**

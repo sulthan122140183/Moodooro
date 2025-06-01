@@ -1,21 +1,36 @@
 package com.example.moodooro.data.repository
 
-import com.example.moodooro.data.local.StudySessionDao
-import com.example.moodooro.data.local.StudySessionEntity
+import androidx.lifecycle.LiveData
+import com.example.moodooro.data.local.dao.StudySessionDao
+import com.example.moodooro.data.local.entity.StudySessionEntity
 import kotlinx.coroutines.flow.Flow
 
 class StudySessionRepository(private val studySessionDao: StudySessionDao) {
 
-    val allStudySessions: Flow<List<StudySessionEntity>> = studySessionDao.getAllSessions()
+    suspend fun insertStudySession(session: StudySessionEntity): Long {
+        return studySessionDao.insertStudySession(session)
+    }
+
+    suspend fun updateMoodForSession(sessionId: Long, mood: String) {
+        studySessionDao.updateMoodForSession(sessionId, mood)
+    }
+
+    // Example: Expose LiveData from DAO
+    fun getAllStudySessions(): LiveData<List<StudySessionEntity>> {
+        return studySessionDao.getAllStudySessions()
+    }
+
+    fun getStudySessionById(sessionId: Long): LiveData<StudySessionEntity?> {
+        return studySessionDao.getStudySessionById(sessionId)
+    }
 
     fun getRecentSessions(limit: Int): Flow<List<StudySessionEntity>> {
         return studySessionDao.getRecentSessions(limit)
     }
 
-    suspend fun insertSession(session: StudySessionEntity) {
-        studySessionDao.insertSession(session)
+    fun getSessionsAfter(timestamp: Long): Flow<List<StudySessionEntity>> {
+        return studySessionDao.getSessionsAfter(timestamp)
     }
 
-    // Anda bisa menambahkan fungsi lain di sini jika diperlukan,
-    // misalnya untuk menghapus atau memperbarui sesi.
+    // Add other repository methods to interact with the DAO
 }

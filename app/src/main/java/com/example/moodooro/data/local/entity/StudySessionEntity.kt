@@ -16,8 +16,16 @@ data class StudySessionEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
 
+    // Waktu sesi dimulai atau dicatat, bisa disesuaikan dengan kebutuhan (misalnya, timestamp selesai)
+    val timestamp: Long, // Waktu sesi selesai
+
+    // Durasi sesi dalam milidetik. Sebaiknya ini adalah durasi fokus yang sebenarnya.
+    val durationMillis: Long, // Durasi sesi dalam milidetik
+
+    // Status fokus selama sesi, contoh: "Focused", "Distracted"
+    val focusStatus: String,
+
     // Menyimpan waktu mulai sesi belajar dalam format milidetik (epoch time).
-    // Ini penting untuk melacak kapan sesi dimulai.
     @ColumnInfo(name = "start_time_millis")
     val startTimeMillis: Long,
 
@@ -48,5 +56,9 @@ data class StudySessionEntity(
     // Biasanya ini adalah timestamp yang dinormalisasi ke awal hari (00:00:00) dari startTimeMillis.
     // Berguna untuk query data sesi berdasarkan rentang tanggal tertentu.
     @ColumnInfo(name = "date_millis")
-    val dateMillis: Long
+    val dateMillis: Long,
+
+    // BARIS YANG DITAMBAHKAN:
+    @ColumnInfo(name = "mood")
+    var mood: String? = null // Bisa var jika akan diubah, String? jika bisa null
 )
