@@ -1,30 +1,19 @@
 <resources>
     <string name="app_name">Moodooro</string>
 
-    <string name="timer_default_time">25:00</string>
-    <string name="session_status_focus">Sesi Fokus</string>
-    <string name="session_status_short_break">Istirahat Singkat</string>
-    <string name="session_status_long_break">Istirahat Panjang</string>
-    <string name="button_start">Mulai</string>
-    <string name="button_pause">Jeda</string>
-    <string name="button_resume">Lanjut</string>
-    <string name="button_reset">Atur Ulang</string>
-    <string name="button_finish_session_and_record_mood">Selesai &amp; Catat Suasana Hati</string>
-    <string name="mood_dialog_title">Bagaimana suasana hatimu setelah sesi ini?</string>
-    <string name="mood_happy">Senang</string>
-    <string name="mood_neutral">Biasa</string>
-    <string name="mood_not_focused">Tidak Fokus</string>
-    <string name="button_save_mood">Simpan</string>
-    <string name="toast_select_mood_first">Pilih suasana hati terlebih dahulu</string>
-    <string name="toast_mood_saved">Suasana hati disimpan: %s</string>
-    <string name="notification_channel_name">Notifikasi Timer Moodooro</string>
-    <string name="notification_channel_description">Notifikasi untuk sesi Pomodoro</string>
-    <string name="timer_notification_title_focus_finished">Sesi Fokus Selesai!</string>
-    <string name="timer_notification_title_break_finished">Waktu Istirahat Selesai!</string>
-    <string name="timer_notification_text_start_break">Waktunya istirahat.</string>
-    <string name="timer_notification_text_start_focus">Waktunya kembali fokus!</string>
-
-    <string name="start">Mulai</string>
-    <string name="reset">Atur Ulang</string>
+    <!-- Strings for TimerActivity -->
+    <string name="back_button_desc">Navigate back</string>
+    <string name="start">Start</string>
     <string name="pause">Pause</string>
+    <string name="reset">Reset</string>
+    <string name="confirm_concentration">Confirm Concentration</string>
+    <string name="save_focused">Focused</string>
+    <string name="save_distracted">Distracted</string>
+
+    <!-- Strings for MoodInputDialogFragment -->
+    <string name="mood_dialog_title">How are you feeling?</string>
+    <string name="mood_happy">Happy</string>
+    <string name="mood_neutral">Neutral</string>
+    <string name="mood_not_focused">Not Focused</string>
+    <string name="button_save_mood">Save Mood</string>
 </resources>
