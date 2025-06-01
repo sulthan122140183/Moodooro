@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 // import com.example.moodooro.data.model.StudySession // Removed
 // import com.example.moodooro.data.model.MoodEntry // Removed
+import com.example.moodooro.data.local.StudySessionEntity // Import baru
 import com.example.moodooro.data.repository.MoodEntryRepository
 import com.example.moodooro.data.repository.StudySessionRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,17 +24,17 @@ class MainViewModel(
 ) : ViewModel() {
 
     // Example: StateFlow for recent study sessions
-    private val _recentStudySessions = MutableStateFlow<List<com.example.moodooro.data.local.entity.StudySessionEntity>>(emptyList())
-    val recentStudySessions: StateFlow<List<com.example.moodooro.data.local.entity.StudySessionEntity>> = _recentStudySessions.asStateFlow()
+    private val _recentStudySessions = MutableStateFlow<List<StudySessionEntity>>(emptyList()) // Path diperbarui
+    val recentStudySessions: StateFlow<List<StudySessionEntity>> = _recentStudySessions.asStateFlow() // Path diperbarui
 
     // Example: StateFlow for mood entries (e.g., last 7 days)
-    // private val _moodHistory = MutableStateFlow<List<com.example.moodooro.data.local.entity.MoodEntryEntity>>(emptyList())
+    // private val _moodHistory = MutableStateFlow<List<com.example.moodooro.data.local.entity.MoodEntryEntity>>(emptyList()) // Path lama untuk MoodEntryEntity jika perlu diubah juga
     // val moodHistory: StateFlow<List<com.example.moodooro.data.local.entity.MoodEntryEntity>> = _moodHistory.asStateFlow()
 
     // Example: Combined state for a dashboard or overview
     // data class DashboardData(
-    // val recentSessions: List<com.example.moodooro.data.local.entity.StudySessionEntity>,
-    // val moodInsights: List<com.example.moodooro.data.local.entity.MoodEntryEntity> // Or some processed insight
+    // val recentSessions: List<StudySessionEntity>, // Path diperbarui
+    // val moodInsights: List<com.example.moodooro.data.local.entity.MoodEntryEntity> // Or some processed insight // Path lama untuk MoodEntryEntity
     // )
     // private val _dashboardData = MutableStateFlow<DashboardData?>(null)
     // val dashboardData: StateFlow<DashboardData?> = _dashboardData.asStateFlow()
@@ -77,13 +78,13 @@ class MainViewModel(
 
     // TODO: Add functions to insert/update study sessions and mood entries
     // For example:
-    // fun addStudySession(session: com.example.moodooro.data.local.entity.StudySessionEntity) {
+    // fun addStudySession(session: StudySessionEntity) { // Path diperbarui
     //     viewModelScope.launch {
     //         studySessionRepository.insertSession(session)
     //     }
     // }
 
-    // fun addMoodEntry(mood: com.example.moodooro.data.local.entity.MoodEntryEntity) {
+    // fun addMoodEntry(mood: com.example.moodooro.data.local.entity.MoodEntryEntity) { // Path lama untuk MoodEntryEntity
     //     viewModelScope.launch {
     //         moodEntryRepository.insertMood(mood)
     //     }

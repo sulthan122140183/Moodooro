@@ -28,9 +28,9 @@ class TimerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_timer)
 
-        timerTextView = findViewById(R.id.timer_text_view)
-        startPauseButton = findViewById(R.id.button_start_pause)
-        resetButton = findViewById(R.id.button_reset)
+        timerTextView = findViewById(R.id.textViewTimer)
+        startPauseButton = findViewById(R.id.buttonStartPause)
+        resetButton = findViewById(R.id.buttonReset)
 
         mediaPlayer = MediaPlayer.create(this, R.raw.timer_finish_sound)
 
