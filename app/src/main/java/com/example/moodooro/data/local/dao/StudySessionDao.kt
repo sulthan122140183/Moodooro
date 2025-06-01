@@ -9,6 +9,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.moodooro.data.local.entity.StudySessionEntity
 import kotlinx.coroutines.flow.Flow
+import java.util.Calendar
 
 /**
  * DAO (Data Access Object) untuk entitas StudySessionEntity.
@@ -94,4 +95,31 @@ interface StudySessionDao {
      */
     @Query("SELECT * FROM study_sessions ORDER BY start_time_millis DESC LIMIT :limit")
     fun getRecentSessions(limit: Int): Flow<List<StudySessionEntity>>
+
+    /**
+     * Mengambil semua sesi belajar dari N hari terakhir hingga sekarang.
+     * @param daysToLookBack Jumlah hari ke belakang untuk mengambil data.
+     * @return Flow yang memancarkan List dari StudySessionEntity.
+     */
+    fun getSessionsLastNdays(daysToLookBack: Int): Flow<List<StudySessionEntity>> {
+        val calendar = Calendar.getInstance()
+        val endTimeMillis = calendar.timeInMillis
+        calendar.add(Calendar.DAY_OF_YEAR, -daysToLookBack)
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        val startTimeMillis = calendar.timeInMillis
+        return getSessionsByDateRangeFlow(startTimeMillis, endTimeMillis)
+    }
+
+    /**
+     * Helper function that returns Flow for date range queries.
+     * This is used by getSessionsLastNdays.
+     * @param startDateMillis Waktu mulai rentang (epoch millis).
+     * @param endDateMillis Waktu akhir rentang (epoch millis).
+     * @return Flow yang berisi List dari StudySessionEntity.
+     */
+    @Query("SELECT * FROM study_sessions WHERE date_millis BETWEEN :startDateMillis AND :endDateMillis ORDER BY start_time_millis DESC")
+    fun getSessionsByDateRangeFlow(startDateMillis: Long, endDateMillis: Long): Flow<List<StudySessionEntity>>
 }

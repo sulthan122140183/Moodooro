@@ -1,11 +1,13 @@
 package com.example.moodooro.ui.main
 
+import android.content.Intent // ADD THIS IMPORT
 import android.os.Bundle
+import android.util.Log // ADD THIS IMPORT
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable // Added for clickable Icon
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -19,19 +21,23 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.Image // Using 'Image' as a placeholder
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember // Added for state management
-import androidx.compose.runtime.toMutableStateList // Added for mutable list state
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext // ADD THIS IMPORT
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.moodooro.ui.theme.MoodooroTheme
+import com.example.moodooro.ui.timer.TimerActivity
+import com.example.moodooro.ui.insights.WeeklyInsightActivity // CORRECTED IMPORT
+const val TIMER_DURATION_MINUTES = "TIMER_DURATION_MINUTES" // ADD THIS CONSTANT
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,8 +51,6 @@ class MainActivity : ComponentActivity() {
 }
 
 data class StudySession(val id: Int, val title: String, val duration: String, val status: String, val iconRes: Int)
-// Make sure InspirationItem's isLiked is a var if you want to modify it directly
-// For this example, we'll replace the item in the list, so val is fine.
 data class InspirationItem(val id: Int, val imageUrl: String, val title: String, val category: String, val author: String, val isLiked: Boolean)
 data class UserFeedbackItem(val id: Int, val userName: String, val feedbackText: String, val rating: Float)
 
@@ -76,8 +80,14 @@ fun StudyAppScreen() {
 
 @Composable
 fun UserProfileSection() {
+    val context = LocalContext.current // ADD THIS LINE to get context
+
     Column(modifier = Modifier.padding(vertical = 16.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(), // Allow centering the icon if no text
+            horizontalArrangement = Arrangement.Center // Center the icon
+        ) {
             Icon(
                 imageVector = Icons.Filled.AccountCircle,
                 contentDescription = "User Profile",
@@ -86,11 +96,6 @@ fun UserProfileSection() {
                     .clip(CircleShape),
                 tint = Color.Gray
             )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column {
-                Text("John Doe", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Text("Student", fontSize = 14.sp, color = Color.Gray)
-            }
         }
         Spacer(modifier = Modifier.height(16.dp))
         Row(
@@ -98,19 +103,50 @@ fun UserProfileSection() {
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CategoryChip("Study", android.R.drawable.ic_menu_agenda)
-            CategoryChip("Breaks", android.R.drawable.ic_menu_recent_history)
-            CategoryChip("Mood", android.R.drawable.ic_menu_compass)
+            CategoryChip(
+                text = "Study",
+                iconRes = android.R.drawable.ic_menu_agenda,
+                onClick = {
+                    Log.d("MainActivity", "Study chip clicked, attempting to start TimerActivity for DEMO (5 seconds).")
+                    val intent = Intent(context, TimerActivity::class.java).apply {
+                        putExtra(TIMER_DURATION_MINUTES, 0) // MODIFIED FOR DEMO: 0 indicates 5 seconds in TimerActivity
+                    }
+                    context.startActivity(intent)
+                }
+            )
+            CategoryChip(
+                text = "Breaks",
+                iconRes = android.R.drawable.ic_menu_recent_history,
+                onClick = {
+                    Log.d("MainActivity", "Breaks chip clicked, attempting to start TimerActivity.")
+                    val intent = Intent(context, TimerActivity::class.java).apply {
+                        putExtra(TIMER_DURATION_MINUTES, 5)
+                    }
+                    context.startActivity(intent)
+                }
+            )
+            CategoryChip(
+                text = "Mood", // Added Mood Chip
+                iconRes = android.R.drawable.ic_menu_compass, // Example icon
+                onClick = {
+                    Log.d("MainActivity", "Mood chip clicked")
+                    // TODO: Implement navigation to MoodReviewActivity or similar
+                    // val intent = Intent(context, MoodReviewActivity::class.java)
+                    // context.startActivity(intent)
+                }
+            )
         }
     }
 }
 
 @Composable
-fun CategoryChip(text: String, iconRes: Int) {
+fun CategoryChip(text: String, iconRes: Int, onClick: () -> Unit) { // MODIFIED: Added onClick parameter
     Card(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        modifier = Modifier.padding(vertical = 8.dp)
+        modifier = Modifier
+            .padding(vertical = 8.dp)
+            .clickable(onClick = onClick) // MODIFIED: Made Card clickable
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -179,6 +215,7 @@ fun StudyDurationCard(
 
 @Composable
 fun WeeklyStudyInsightsSection() {
+    val context = LocalContext.current // ADDED to get context
     Column(modifier = Modifier.padding(vertical = 8.dp)) {
         Text("Weekly Study Insights", fontWeight = FontWeight.Bold, fontSize = 18.sp)
         Spacer(modifier = Modifier.height(8.dp))
@@ -192,7 +229,14 @@ fun WeeklyStudyInsightsSection() {
                 Text("3 hours", fontWeight = FontWeight.Bold, fontSize = 28.sp)
                 Text("+10%", fontSize = 14.sp, color = Color(0xFF4CAF50))
                 Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = { /* TODO: Implement navigation or action */ }, modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = {
+                        Log.d("ViewDetails", "View Details clicked, launching WeeklyInsightActivity.")
+                        val intent = Intent(context, WeeklyInsightActivity::class.java) // CORRECTED CLASS
+                        context.startActivity(intent)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Text("View Details")
                 }
             }
@@ -240,7 +284,6 @@ fun RecentStudySessionItem(session: StudySession) {
 
 @Composable
 fun CommunityInspirationSection() {
-    // Use remember and toMutableStateList to make the list stateful
     val inspirations = remember {
         listOf(
             InspirationItem(1, "motivational_quote_image_url", "Stay focused and never give up! 💪", "Inspiration", "StudyPro123", true),
@@ -252,14 +295,12 @@ fun CommunityInspirationSection() {
         Text("Community Inspiration", fontWeight = FontWeight.Bold, fontSize = 18.sp)
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            items(inspirations, key = { it.id }) { inspiration -> // Added key for better performance
+            items(inspirations, key = { it.id }) { inspiration ->
                 InspirationCard(
                     inspiration = inspiration,
                     onLikeClicked = {
-                        // Find the index of the item
                         val index = inspirations.indexOfFirst { item -> item.id == inspiration.id }
                         if (index != -1) {
-                            // Create a new item with the toggled like status
                             inspirations[index] = inspiration.copy(isLiked = !inspiration.isLiked)
                         }
                     }
@@ -270,7 +311,7 @@ fun CommunityInspirationSection() {
 }
 
 @Composable
-fun InspirationCard(inspiration: InspirationItem, onLikeClicked: () -> Unit) { // Added onLikeClicked parameter
+fun InspirationCard(inspiration: InspirationItem, onLikeClicked: () -> Unit) {
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -284,7 +325,7 @@ fun InspirationCard(inspiration: InspirationItem, onLikeClicked: () -> Unit) { /
                     .background(Color.LightGray),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Image", color = Color.White) // Placeholder for actual image loading
+                Text("Image", color = Color.White)
             }
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(inspiration.title, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, maxLines = 2)
@@ -300,7 +341,7 @@ fun InspirationCard(inspiration: InspirationItem, onLikeClicked: () -> Unit) { /
                         imageVector = Icons.Filled.Favorite,
                         contentDescription = "Like",
                         tint = if (inspiration.isLiked) Color.Red else Color.Gray,
-                        modifier = Modifier.clickable(onClick = onLikeClicked) // Made icon clickable
+                        modifier = Modifier.clickable(onClick = onLikeClicked)
                     )
                 }
             }
@@ -350,10 +391,10 @@ fun UserFeedbackCard(feedback: UserFeedbackItem) {
             Spacer(modifier = Modifier.height(8.dp))
             Row {
                 repeat(feedback.rating.toInt()) {
-                    Icon( // This icon should probably be a Star icon
+                    Icon(
                         imageVector = Icons.Filled.Favorite, // Consider changing to Icons.Filled.Star
                         contentDescription = "Star",
-                        tint = Color.Yellow // Consider using a star color from your theme
+                        tint = Color.Yellow
                     )
                 }
             }
@@ -363,7 +404,7 @@ fun UserFeedbackCard(feedback: UserFeedbackItem) {
 
 @Composable
 fun QuickActionsSection() {
-    // This section is not yet interactive based on the current code
+    val context = LocalContext.current // ADDED context for potential clicks
     Column(modifier = Modifier.padding(vertical = 8.dp)) {
         Text("Quick Actions", fontWeight = FontWeight.Bold, fontSize = 18.sp)
         Spacer(modifier = Modifier.height(8.dp))
@@ -371,18 +412,28 @@ fun QuickActionsSection() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            QuickActionItem("Take Notes", android.R.drawable.ic_menu_edit, Modifier.weight(1f))
-            QuickActionItem("Listen to Focus...", android.R.drawable.ic_media_play, Modifier.weight(1f))
+            QuickActionItem(
+                text = "Take Notes",
+                iconRes = android.R.drawable.ic_menu_edit,
+                modifier = Modifier.weight(1f),
+                onClick = { Log.d("QuickAction", "Take Notes clicked") } // MODIFIED: Added onClick
+            )
+            QuickActionItem(
+                text = "Listen to Focus...",
+                iconRes = android.R.drawable.ic_media_play,
+                modifier = Modifier.weight(1f),
+                onClick = { Log.d("QuickAction", "Listen to Focus clicked") } // MODIFIED: Added onClick
+            )
         }
     }
 }
 
 @Composable
-fun QuickActionItem(text: String, iconRes: Int, modifier: Modifier = Modifier) {
+fun QuickActionItem(text: String, iconRes: Int, modifier: Modifier = Modifier, onClick: () -> Unit) { // MODIFIED: Added onClick
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        modifier = modifier // If this should be clickable, add Modifier.clickable here
+        modifier = modifier.clickable(onClick = onClick) // MODIFIED: Made Card clickable
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -401,7 +452,6 @@ fun QuickActionItem(text: String, iconRes: Int, modifier: Modifier = Modifier) {
 
 @Composable
 fun MoodTrackingInsightsSection() {
-    // This section is not yet interactive based on the current code
     Column(modifier = Modifier.padding(vertical = 8.dp)) {
         Card(
             shape = RoundedCornerShape(12.dp),
@@ -411,7 +461,7 @@ fun MoodTrackingInsightsSection() {
                 .height(200.dp)
         ) {
             Box(contentAlignment = Alignment.Center) {
-                Text("Mood Tracking Insights", fontSize = 16.sp, color = Color.Gray) // Placeholder
+                Text("Mood Tracking Insights", fontSize = 16.sp, color = Color.Gray)
             }
         }
         Row(
@@ -420,7 +470,7 @@ fun MoodTrackingInsightsSection() {
                 .padding(vertical = 8.dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            repeat(3) { // Placeholder dots
+            repeat(3) {
                 Box(
                     modifier = Modifier
                         .size(24.dp)
@@ -434,7 +484,7 @@ fun MoodTrackingInsightsSection() {
 }
 
 
-@Preview(showBackground = true, widthDp = 360, heightDp = 1200) // Increased height to see more content
+@Preview(showBackground = true, widthDp = 360, heightDp = 1200)
 @Composable
 fun DefaultPreview() {
     MoodooroTheme {

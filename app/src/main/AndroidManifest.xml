@@ -25,10 +25,15 @@
 
         <activity
             android:name=".ui.timer.TimerActivity"
-            android:exported="true" 
+            android:exported="true"
             android:screenOrientation="portrait" tools:ignore="LockedOrientationActivity">
             <!-- Launcher intent filter removed from here -->
         </activity>
+
+        <activity
+            android:name=".ui.insights.WeeklyInsightActivity"
+            android:exported="false"
+            android:label="Weekly Insights" />
 
     </application>
 
