@@ -86,4 +86,12 @@ interface StudySessionDao {
      */
     @Query("SELECT * FROM study_sessions ORDER BY start_time_millis DESC LIMIT 1")
     fun getLatestSession(): Flow<StudySessionEntity?>
+
+    /**
+     * Mengambil beberapa sesi belajar terbaru, diurutkan berdasarkan waktu mulai (terbaru dulu), dengan jumlah terbatas.
+     * @param limit Jumlah maksimal sesi yang akan diambil.
+     * @return Flow yang memancarkan List dari StudySessionEntity.
+     */
+    @Query("SELECT * FROM study_sessions ORDER BY start_time_millis DESC LIMIT :limit")
+    fun getRecentSessions(limit: Int): Flow<List<StudySessionEntity>>
 }

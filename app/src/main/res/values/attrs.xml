@@ -1,0 +1,4 @@
+<resources>
+    <attr name="materialButtonPrimaryStyle" format="reference" />
+    <attr name="materialButtonSecondaryStyle" format="reference" />
+</resources>

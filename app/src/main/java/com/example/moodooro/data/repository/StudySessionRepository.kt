@@ -78,4 +78,13 @@ class StudySessionRepository(private val studySessionDao: StudySessionDao) {
     fun getSessionsByDateRange(startDateMillis: Long, endDateMillis: Long): LiveData<List<StudySessionEntity>> {
         return studySessionDao.getSessionsByDateRange(startDateMillis, endDateMillis)
     }
+
+    /**
+     * Mengambil beberapa sesi belajar terbaru, diurutkan berdasarkan waktu mulai (terbaru dulu), dengan jumlah terbatas.
+     * @param limit Jumlah maksimal sesi yang akan diambil.
+     * @return Flow yang memancarkan List dari StudySessionEntity.
+     */
+    fun getRecentSessions(limit: Int): Flow<List<StudySessionEntity>> {
+        return studySessionDao.getRecentSessions(limit)
+    }
 }
